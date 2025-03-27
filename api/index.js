@@ -14,14 +14,22 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware for CORS
 app.use(cors({
-  origin: [
-    'https://real-estate-mern-frontend-pied.vercel.app',
-    'http://localhost:3000',
-    // 'http://13.61.126.206:3000',
-  ],
+  origin: (origin, callback) => {
+    const allowedOrigins = [
+      'https://real-estate-mern-frontend-pied.vercel.app',
+      'http://localhost:5173',
+      // 'http://13.61.126.206:3000',
+    ];
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   optionsSuccessStatus: 200,
 }));
+
 
 // Middleware for JSON parsing and cookies
 app.use(express.json());
