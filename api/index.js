@@ -15,9 +15,9 @@ const PORT = process.env.PORT || 3000;
 // Middleware for CORS
 app.use(cors({
   origin: [
-    'https://real-estate-mern-frontend-one.vercel.app',
+    'https://real-estate-mern-frontend-pied.vercel.app/',
     'http://localhost:3000',
-    'http://13.61.126.206:3000',
+    // 'http://13.61.126.206:3000',
   ],
   credentials: true,
   optionsSuccessStatus: 200,
