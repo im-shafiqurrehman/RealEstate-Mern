@@ -1,0 +1,30 @@
+
+services:
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./client:/client
+      - /client/node_modules
+    env_file:
+      - ./client/.env
+
+      
+  backend:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./api:/api
+      - /api/node_modules
+    env_file:      # include backend .env file
+      - ./api/.env
+
+
+volumes:
+  mongodb_data: # Not needed if MongoDB is not local
