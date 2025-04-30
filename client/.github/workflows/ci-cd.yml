@@ -1,0 +1,59 @@
+name: Auto Deploy NodeApplication on EC2
+
+on:
+  push:
+    branches:
+      - main  # This triggers deployment when code is pushed to the 'main' branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # The job will run on a Linux-based GitHub runner (Ubuntu)
+
+    steps:
+      # Step 1: Checkout the latest code from the GitHub repository
+      - name: Checkout Source
+        uses: actions/checkout@v4  # Pulls the latest code from GitHub
+
+      # Step 2: Login to Docker Hub using credentials stored in GitHub secrets
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Step 3: Build the Docker image from the project
+      - name: Build Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: shafique471/react_aws:latest
+
+      # Step 4: Push the built Docker image to Docker Hub
+      - name: Publish Image to Docker Hub
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: shafique471/react_aws:latest
+
+  deploy:
+    needs: build  # This job will run after the 'build' job is successful
+    runs-on: self-hosted  # Run the deploy job on a self-hosted runner (EC2 or other server)
+
+    steps:
+      # Step 1: Pull the latest Docker image from Docker Hub
+      - name: Pull Image from Docker Hub
+        run: docker pull shafique471/react_aws:latest
+
+      # Step 2: Remove any existing container with the same name before running a new one (if any)
+      - name: Remove Old Container (if exists)
+        run: docker rm -f reactjs-app-container || true
+
+      # Step 3: Run the new Docker container using the pulled image with all necessary environment variables
+      - name: Run Docker Container
+        run: |
+          docker run -d -p 5173:80 \
+          --name reactjs-app-container \
+          -e VITE_FIREBASE_API_KEY=${{ secrets.VITE_FIREBASE_API_KEY }} \
+          shafique471/react_aws:latest
