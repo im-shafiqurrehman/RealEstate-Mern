@@ -24,7 +24,8 @@ export const signin = async (req, res, next) => {
       const validPassword = bcryptjs.compareSync(password, validUser.password);
       if (!validPassword) return next(errorHandler(401, 'Wrong credentials!'));
       const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
-      const { password: pass, ...rest } = validUser._doc;
+      const { password: pass, ...rest } = validUser._doc;// pass = validUser._doc.password      //validUser._doc = MongoDB ka raw object hai which contains all fields
+     // remaining field ko ak object ma dal do aur usko rest naam dy do
       res
         .cookie('access_token', token, { httpOnly: true })
         .status(200)
@@ -45,10 +46,19 @@ export const signin = async (req, res, next) => {
           .status(200)
           .json(rest);
       } else {
+        // 36 gives you all digits and letters (0-9, a-z).    base-36  
+        // Math.random().toString(36)
+        // Math.random() generates a decimal between 0 and 1, like 0.123456789.    
+        // .toString(36) converts that decimal to a base-36 string like:   0.123456789 -> "0.pxsnv9f" 
+        //slice(-8) means “take the last 8 characters, Negative indices can be used to slice from the end:   
         const generatedPassword =
-          Math.random().toString(36).slice(-8) +
-          Math.random().toString(36).slice(-8);
-        const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
+          Math.random().toString(36).slice(-8) +      
+          Math.random().toString(36).slice(-8); 
+
+//    bcryptjs is a popular library in Node.js for hashing passwords securely.
+// .hashSync() is the synchronous version of the hashing function (meaning it blocks the thread until finished).
+// There’s also an asynchronous version called .hash() that uses callbacks or promises.
+        const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);   // 10 = means how many times apply the hashing algorithm
         const newUser = new User({
           username:
             req.body.name.split(' ').join('').toLowerCase() +
@@ -60,6 +70,8 @@ export const signin = async (req, res, next) => {
         await newUser.save();
         const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
         const { password: pass, ...rest } = newUser._doc;
+    //👉  password property ko pass variable me daal do.
+  // 👉 Baaki saari properties ko ek new object me daal do aur uska naam rest rakh do.
         res
           .cookie('access_token', token, { httpOnly: true })
           .status(200)

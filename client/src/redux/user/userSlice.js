@@ -1,16 +1,23 @@
 import { createSlice } from "@reduxjs/toolkit";
+// Ye createSlice function Redux Toolkit ka ek helper hai jo humare liye Redux reducer aur actions 
+// automatically generate karta hai.
 
+// redux slice
 const initialState = {
     currentUser : null,
     error : null,
     loading :false
 };
 
+// createSlice ek object leta hai jisme:
+// name: Slice ka naam.
+// initialState: Default state.
+// reducers: Sare actions (jaise signInStart, signInSuccess, etc.) ko define karta hai.
 
 const userSlice = createSlice({
     name: 'user',
     initialState,
-    reducers: {
+    reducers: {   // ye do cheezy leta hai   currectState and action  => and always return the new state
         signInStart: (state) => {
             state.loading = true;
         },
@@ -62,6 +69,11 @@ const userSlice = createSlice({
     }
 })
 
+
+//Ye Redux actions ko destructure karke export kar raha hai taake hum components
+//  me dispatch() karke unko call kar sakein.
+
+//useDispatch: Store me action send karke state update karata hai through reducer. 
 export const { signInStart, 
     signInSuccess, 
     signInFailure,
@@ -76,4 +88,5 @@ export const { signInStart,
     signOutUserFailure
 } = userSlice.actions;
 
+//Ye slice ka reducer export kar raha hai jise hum store me use karenge.
 export default userSlice.reducer;

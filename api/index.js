@@ -13,27 +13,45 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware for CORS
+// 📌 Middleware for CORS (Cross-Origin Resource Sharing)
+
+// Browser ki ek security feature hoti hai jo unknown (unauthorized) requests ko block kar deti hai.
+// CORS middleware server ko batata hai ki kis origin se request allow karni chahiye aur kis se nahi.
+
+// Yahan humne `allowedOrigins` ki ek list banayi hai, jahan se requests allow ki jayengi.
+
 app.use(cors({
   origin: (origin, callback) => {
-    const allowedOrigins = [
-      'https://real-estate-mern-frontend-pied.vercel.app',
-      'http://localhost:5173',
-    ];
+    // Agar request ka origin allowedOrigins me hai, ya origin hi nahi (server to server request),
+    // to request ko allow kar do.
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
+      // Agar request allowed nahi hai to error bhej do.
       callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true,
-  optionsSuccessStatus: 200,
+  credentials: true,           // Agar request cookies ke sath aa rahi hai to allow karo.
+  optionsSuccessStatus: 200    // For successful preflight requests, 200 status code send karo.
 }));
 
 
-// Middleware for JSON parsing and cookies
+
+// 📌 Middleware (jaty hoye mil kr jana) 
+
+// 📦 JSON parsing ka matlab hai: 
+// Frontend (browser, Postman, mobile app, etc.) jab bhi request bhejta hai, wo aksar JSON format mein hoti hai.
+// Express by default JSON ko samajh nahi pata, isiliye agar hum JSON request bhejein to `req.body` undefined milta hai.
+// ⚡ express.json() middleware se hum JSON ko parse kar ke use JavaScript object bana lete hain.
+// Iss tarah hum `req.body` se easily data access kar sakte hain.
 app.use(express.json());
+
+// 🍪 Cookie parsing ka matlab hai: 
+// Jab client request ke sath cookies bhejta hai, wo headers ke form mein hoti hain.
+// express-cookie-parser middleware cookies ko parse kar ke `req.cookies` object mein convert kar deta hai.
+// Agar hum ye na lagayen to cookies undefined rehti hain.
 app.use(cookieParser());
+
 
 // Serve static files from the build folder in production
 const __dirname = path.resolve(); 

@@ -2,20 +2,38 @@ import React, { useEffect, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+// useSelector: Redux state ko component me access karta hai.
+// Agar user logged in hai to avatar ya username show karta hai.
+
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
+  //   Redux store se state.user.currentUser ko le raha hai.
+  // Agar user login hai to uska data (avatar, username etc.) yahan milega.
   const [searchTerm, setSearchTerm] = useState('');
   const [avatarError, setAvatarError] = useState(false);
   const navigate = useNavigate();
 
+
+  // Ye ek arrow function hai jo e (event object) ko parameter ke taur pe accept karta hai.
+  //e ya event object ek special JavaScript object hai jo automatically generate hota hai jab koi event (like click, submit, keypress)
+  //  trigger hota hai.
+  // Ye object event se related saari details rakhta hai (konsa element, kab, kahan click hua, etc.) 
+  //  e.target → Element batata hai jis par event hua
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    // Browser ka default form submission rok deta hai, taki page reload na ho aur React routing ka use ho.
+
     const urlParams = new URLSearchParams(window.location.search);
     urlParams.set('searchTerm', searchTerm);
     const searchQuery = urlParams.toString();
     navigate(`/search?${searchQuery}`);
+    // 4️ navigate function se user ko programmatically "/search" page pe bhej raha hai.
+    // e.g. navigate(`/search?searchTerm=newValue`)
+    // Iska fayda ye hai ke bina page reload ke user search results dekh sakta hai.
   };
+
 
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
@@ -26,7 +44,7 @@ export default function Header() {
   }, [location.search]);
 
   useEffect(() => {
-    if (currentUser && currentUser.avatar) {
+    if (currentUser && currentUser.avatar) {   // currectUser =>  state.user.currentUser
       const img = new Image();
       img.src = currentUser.avatar;
       img.onload = () => setAvatarError(false);
