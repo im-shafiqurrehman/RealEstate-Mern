@@ -10,7 +10,9 @@ import storage from 'redux-persist/lib/storage';
 
 const rootReducer = combineReducers({ user: userReducer });
 
-
+// key: "root" ka matlab:
+// Ye Redux Persist ke liye ek unique identifier hota hai.
+// Is key ke naam se Redux state localStorage ya AsyncStorage me save ki jati hai.
 const persistConfig = {
   key: 'root',
   storage,
