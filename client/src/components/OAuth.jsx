@@ -4,6 +4,7 @@ import { app } from '../firebase';
 import { useDispatch } from 'react-redux';
 import { signInSuccess } from '../redux/user/userSlice';
 import { useNavigate } from 'react-router-dom';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api.js';
 
 export default function OAuth() {
     const dispatch = useDispatch();
@@ -13,7 +14,7 @@ export default function OAuth() {
       const provider = new GoogleAuthProvider();
       const auth = getAuth(app);
       const result = await signInWithPopup(auth, provider); 
-      const res = await fetch('https://real-estate-mern-backend-rho.vercel.app/api/auth/google',{
+      const res = await fetch(buildApiUrl(API_ENDPOINTS.GOOGLE_AUTH),{
         method: 'POST',
         headers: {
             'content-type': 'application/json'
@@ -23,6 +24,7 @@ export default function OAuth() {
             email:result.user.email,
             photo:result.user.photoURL
         }),
+        credentials: 'include',
       });
         const data = await res.json();
         dispatch(signInSuccess(data));

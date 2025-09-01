@@ -19,6 +19,13 @@ const PORT = process.env.PORT || 3000;
 // CORS middleware server ko batata hai ki kis origin se request allow karni chahiye aur kis se nahi.
 
 // Yahan humne `allowedOrigins` ki ek list banayi hai, jahan se requests allow ki jayengi.
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'http://localhost:4173',
+  'https://real-estate-mern-frontend-pied.vercel.app',
+  'https://real-estate-mern-backend-rho.vercel.app'
+];
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -76,9 +83,9 @@ app.use('/api/user', userRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/listing', listingRouter);
 
-app.use("/health",()=>{
+app.use("/health", (req, res) => {
   console.log("Server is running")
-
+  res.status(200).json({ message: "Server is running", success: true });
 });
 // Serve frontend (React/Vite SPA) in production
 app.get('*', (req, res) => {

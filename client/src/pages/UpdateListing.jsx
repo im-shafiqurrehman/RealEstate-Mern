@@ -8,6 +8,7 @@ import {
 import { app } from '../firebase';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api.js';
 
 export default function CreateListing() {
   const { currentUser } = useSelector((state) => state.user);
@@ -36,7 +37,7 @@ export default function CreateListing() {
   useEffect(() => {
     const fetchListing = async () => {
       const listingId = params.listingId;
-      const res = await fetch(`https://real-estate-mern-backend-rho.vercel.app/api/listing/get/${listingId}`);
+      const res = await fetch(buildApiUrl(`${API_ENDPOINTS.GET_LISTING_BY_ID}/${listingId}`));
       const data = await res.json();
       if (data.success === false) {
         console.log(data.message);
@@ -148,7 +149,7 @@ export default function CreateListing() {
         return setError('Discount price must be lower than regular price');
       setLoading(true);
       setError(false);
-      const res = await fetch(`https://real-estate-mern-backend-rho.vercel.app/api/listing/update/${params.listingId}`, {
+      const res = await fetch(buildApiUrl(`${API_ENDPOINTS.UPDATE_LISTING}/${params.listingId}`), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -157,6 +158,7 @@ export default function CreateListing() {
           ...formData,
           userRef: currentUser._id,
         }),
+        credentials: 'include',
       });
       const data = await res.json();
       setLoading(false);

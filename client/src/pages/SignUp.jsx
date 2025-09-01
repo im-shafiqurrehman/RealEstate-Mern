@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import OAuth from '../components/OAuth';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api.js';
 
 
 function SignUp() {
@@ -18,12 +19,13 @@ function SignUp() {
     e.preventDefault();
     try {
       setLoading(true);
-      const res = await fetch('https://real-estate-mern-backend-rho.vercel.app/api/auth/signup', {
+      const res = await fetch(buildApiUrl(API_ENDPOINTS.SIGNUP), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
+        credentials: 'include',
       });
       const data = await res.json();
       console.log(data);

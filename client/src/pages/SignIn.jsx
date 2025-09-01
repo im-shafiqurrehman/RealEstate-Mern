@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom'
 import { signInStart, signInSuccess, signInFailure } from '../redux/user/userSlice';
 import OAuth from '../components/OAuth';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api.js';
 
 export default function Signin() {
   const [formData, setFormData] = useState({});
@@ -19,12 +20,13 @@ export default function Signin() {
     e.preventDefault();
     try {
       dispatch(signInStart());
-      const res = await fetch('https://real-estate-mern-backend-rho.vercel.app/api/auth/signin', {
+      const res = await fetch(buildApiUrl(API_ENDPOINTS.SIGNIN), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
+        credentials: 'include',
       });
       const data = await res.json();
       console.log(data);

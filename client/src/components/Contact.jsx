@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api.js';
 
 export default function Contact({ listing }) {
   const [landlord, setLandlord] = useState(null);
@@ -11,7 +12,7 @@ export default function Contact({ listing }) {
   useEffect(() => {
     const fetchLandlord = async () => {
       try {
-        const res = await fetch(`https://real-estate-mern-backend-rho.vercel.app/api/user/${listing.userRef}`);
+        const res = await fetch(buildApiUrl(`${API_ENDPOINTS.GET_USER}/${listing.userRef}`));
         const data = await res.json();
         setLandlord(data);
       } catch (error) {

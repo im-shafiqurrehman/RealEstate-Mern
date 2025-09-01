@@ -8,6 +8,7 @@ import {
 import { app } from '../firebase';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api.js';
 
 export default function CreateListing() {
   const { currentUser } = useSelector((state) => state.user);
@@ -132,7 +133,7 @@ export default function CreateListing() {
         return setError('Discount price must be lower than regular price');
       setLoading(true);
       setError(false);
-      const res = await fetch('https://real-estate-mern-backend-rho.vercel.app/api/listing/create', {
+      const res = await fetch(buildApiUrl(API_ENDPOINTS.CREATE_LISTING), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -141,6 +142,7 @@ export default function CreateListing() {
           ...formData,
           userRef: currentUser._id,
         }),
+        credentials: 'include',
       });
       const data = await res.json();
       setLoading(false);

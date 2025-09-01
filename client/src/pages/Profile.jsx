@@ -17,6 +17,7 @@ import {
   uploadBytesResumable,
 } from 'firebase/storage';
 import { app } from '../firebase';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api.js';
 
 //fibase storage
 // allow read;
@@ -41,6 +42,10 @@ export default function Profile() {
       handleFileUpload(file);
     }
   }, [file]);
+
+
+
+
 
   const handleFileUpload = (file) => {
     const storage = getStorage(app);
@@ -75,12 +80,13 @@ export default function Profile() {
     try {
       dispatch(updateUserStart());
 
-      const res = await fetch(`https://real-estate-mern-backend-rho.vercel.app/api/user/update/${currentUser._id}`, {
+      const res = await fetch(buildApiUrl(`${API_ENDPOINTS.UPDATE_USER}/${currentUser._id}`), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
+        credentials: 'include',
       });
 
       const data = await res.json();
@@ -98,8 +104,9 @@ export default function Profile() {
     const handleDeleteUser = async() =>{
       try{
         dispatch(deleteUserStart());
-        const res = await fetch(`https://real-estate-mern-backend-rho.vercel.app/api/user/delete/${currentUser._id}`,{
+        const res = await fetch(buildApiUrl(`${API_ENDPOINTS.DELETE_USER}/${currentUser._id}`),{
           method: 'delete',
+          credentials: 'include',
         });
         const data = await res.json();
         if(data.success === false){
@@ -114,7 +121,9 @@ export default function Profile() {
     const handleSignOut = async () => {
       try {
         dispatch(signOutUserStart());
-        const res = await fetch('/api/auth/signout');
+        const res = await fetch(buildApiUrl(API_ENDPOINTS.SIGNOUT), {
+          credentials: 'include',
+        });
         const data = await res.json();
         if (data.success === false) {
           dispatch(deleteUserFailure(data.message));
@@ -128,7 +137,9 @@ export default function Profile() {
     const handleShowListings = async () => {
       try {
         setShowListingsError(false);
-        const res = await fetch(`https://real-estate-mern-backend-rho.vercel.app/api/user/listings/${currentUser._id}`);
+        const res = await fetch(buildApiUrl(`${API_ENDPOINTS.GET_USER_LISTINGS}/${currentUser._id}`), {
+          credentials: 'include',
+        });
         const data = await res.json();
         if (data.success === false) {
           setShowListingsError(true);
@@ -142,8 +153,9 @@ export default function Profile() {
     };
       const handleListingDelete = async (listingId) => {
       try {
-        const res = await fetch(`https://real-estate-mern-backend-rho.vercel.app/api/listing/delete/${listingId}`, {
+        const res = await fetch(buildApiUrl(`${API_ENDPOINTS.DELETE_LISTING}/${listingId}`), {
           method: 'DELETE',
+          credentials: 'include',
         });
         const data = await res.json();
         if (data.success === false) {

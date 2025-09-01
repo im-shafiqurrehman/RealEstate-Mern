@@ -7,6 +7,7 @@ import SwiperCore from 'swiper';
 import 'swiper/css/bundle';
 import { ChevronRight, Home as HomeIcon, DollarSign, TrendingUp, Search, Star, ArrowLeft, ArrowRight } from 'lucide-react';
 import ListingItem from '../components/ListingItem';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api.js';
 
 export default function Home() {
   const [offerListings, setOfferListings] = useState([]);
@@ -30,7 +31,7 @@ export default function Home() {
   useEffect(() => {
     const fetchOfferListings = async () => {  
       try {
-        const res = await fetch('api/listing/get?offer=true&limit=4');
+        const res = await fetch(buildApiUrl(`${API_ENDPOINTS.GET_LISTING}?offer=true&limit=4`));
         const data = await res.json();
         setOfferListings(data);
         fetchRentListings();
@@ -40,7 +41,7 @@ export default function Home() {
     };
     const fetchRentListings = async () => {
       try {
-        const res = await fetch('api/listing/get?type=rent&limit=4');
+        const res = await fetch(buildApiUrl(`${API_ENDPOINTS.GET_LISTING}?type=rent&limit=4`));
         const data = await res.json();
         setRentListings(data);
         fetchSaleListings();
@@ -51,7 +52,7 @@ export default function Home() {
 
     const fetchSaleListings = async () => {
       try {
-        const res = await fetch('api/listing/get?type=sale&limit=4');
+        const res = await fetch(buildApiUrl(`${API_ENDPOINTS.GET_LISTING}?type=sale&limit=4`));
         const data = await res.json();
         setSaleListings(data);
       } catch (error) {
