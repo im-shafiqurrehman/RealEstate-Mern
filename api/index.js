@@ -35,11 +35,14 @@ app.use(cors({
       callback(null, true);
     } else {
       // Agar request allowed nahi hai to error bhej do.
+      console.log('CORS blocked origin:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,           // Agar request cookies ke sath aa rahi hai to allow karo.
-  optionsSuccessStatus: 200    // For successful preflight requests, 200 status code send karo.
+  optionsSuccessStatus: 200,   // For successful preflight requests, 200 status code send karo.
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie']
 }));
 
 

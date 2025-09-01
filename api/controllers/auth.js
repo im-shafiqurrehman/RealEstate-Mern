@@ -26,8 +26,17 @@ export const signin = async (req, res, next) => {
       const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
       const { password: pass, ...rest } = validUser._doc;// pass = validUser._doc.password      //validUser._doc = MongoDB ka raw object hai which contains all fields
      // remaining field ko ak object ma dal do aur usko rest naam dy do
+      
+      // Cookie configuration for cross-origin requests
+      const cookieOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Allow cross-site cookies in production
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+      };
+      
       res
-        .cookie('access_token', token, { httpOnly: true })
+        .cookie('access_token', token, cookieOptions)
         .status(200)
         .json(rest);
     } catch (error) {
@@ -38,11 +47,20 @@ export const signin = async (req, res, next) => {
   export const google = async (req, res, next) => {
     try {
       const user = await User.findOne({ email: req.body.email });
+      
+      // Cookie configuration for cross-origin requests
+      const cookieOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+      };
+      
       if (user) {
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
         const { password: pass, ...rest } = user._doc;
         res
-          .cookie('access_token', token, { httpOnly: true })
+          .cookie('access_token', token, cookieOptions)
           .status(200)
           .json(rest);
       } else {
@@ -73,7 +91,7 @@ export const signin = async (req, res, next) => {
     //👉  password property ko pass variable me daal do.
   // 👉 Baaki saari properties ko ek new object me daal do aur uska naam rest rakh do.
         res
-          .cookie('access_token', token, { httpOnly: true })
+          .cookie('access_token', token, cookieOptions)
           .status(200)
           .json(rest);
       }

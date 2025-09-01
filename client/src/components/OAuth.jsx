@@ -13,6 +13,11 @@ export default function OAuth() {
     try {
       const provider = new GoogleAuthProvider();
       const auth = getAuth(app);
+      
+      // Add additional scopes if needed
+      provider.addScope('email');
+      provider.addScope('profile');
+      
       const result = await signInWithPopup(auth, provider); 
       const res = await fetch(buildApiUrl(API_ENDPOINTS.GOOGLE_AUTH),{
         method: 'POST',
@@ -27,10 +32,27 @@ export default function OAuth() {
         credentials: 'include',
       });
         const data = await res.json();
+        
+        if (data.success === false) {
+          console.error('Server error:', data.message);
+          return;
+        }
+        
         dispatch(signInSuccess(data));
         navigate("/");
     } catch (error) {
-      console.log('Could not sign in with Google', error);
+      console.error('Google sign-in error:', error);
+      
+      // Handle specific Firebase errors
+      if (error.code === 'auth/unauthorized-domain') {
+        alert('This domain is not authorized for Google Sign-In. Please contact the administrator.');
+      } else if (error.code === 'auth/popup-blocked') {
+        alert('Popup was blocked. Please allow popups for this site.');
+      } else if (error.code === 'auth/popup-closed-by-user') {
+        console.log('User closed the popup');
+      } else {
+        alert('Could not sign in with Google. Please try again.');
+      }
     }
   };
 

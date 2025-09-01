@@ -27,6 +27,13 @@ export const makeAuthenticatedRequest = async (endpoint, options = {}) => {
         errorMessage = errorData || `HTTP error! status: ${response.status}`;
       }
       
+      // Handle specific error cases
+      if (response.status === 401) {
+        // Unauthorized - possibly expired token
+        console.error('Authentication failed. Please sign in again.');
+        // You might want to redirect to login page here
+      }
+      
       throw new Error(errorMessage);
     }
     
